@@ -29,7 +29,6 @@ module DigYamlFrontMatter
           return false
         end
       end
-      true
     end
   end
 end
