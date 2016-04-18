@@ -12,6 +12,7 @@ class Command < Thor
   option :exclude_any, :aliases => '-e', :type => :array
   option :include_all, :aliases => '-I', :type => :array
   option :exclude_all, :aliases => '-E', :type => :array
+  option :property,    :aliases => '-p', :type => :string
   def ls
     digger = DigYamlFrontMatter::Digger.new
     digger.dig(options['path']) do |path, parsed|
@@ -38,7 +39,18 @@ class Command < Thor
         end
       end
       is_pass = true if filter_modes.all? { |m| options[m].nil? }
-      puts path if is_pass
+      next unless is_pass
+      if options['property']
+        value = parsed.front_matter.fetch(options['property'], '')
+        if value.is_a?(Array)
+          printf("%s", value)
+          puts
+        else
+          puts value
+        end
+      else
+        puts path
+      end
     end
   end
 

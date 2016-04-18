@@ -39,6 +39,21 @@ dig_yaml_front_matter ls -E tags game
 dig_yaml_front_matter ls --path='./blog/**.md'
 ```
 
+#### 表示内容の変更
+```
+# studyタグを含んでいないファイルのタグを列挙する
+❯ dig_yaml_front_matter ls -e tags study  -p tags
+["memo"]
+["memo"]
+["comment"]
+["lifehack", "music"]
+
+❯ dig_yaml_front_matter ls -e tags study  -p title
+今日は良い1日だった
+最近欲しいものリスト
+今日やること
+```
+
 ### count
 
 日・月・年・曜日別でファイルを集計できます。`each`オプションで集計単位を指定します。`average`オプションを一緒に使うと平均が取れます。

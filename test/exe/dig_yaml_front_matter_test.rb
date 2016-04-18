@@ -3,10 +3,10 @@ require_relative '../test_helper'
 class DigYamlFrontMatterTest < Test::Unit::TestCase
   def create_files
     FileUtils.rm(Dir.glob('*'))
-    create_memo('./file.md',  tags: [])
-    create_memo('./file_tag1.md',  tags: ['tag1'])
-    create_memo('./file_tag1_tag2.md',  tags: ['tag1', 'tag2'])
-    create_memo('./file_tag2.md',  tags: ['tag2'])
+    create_memo('./file.md', title: 'file_title', tags: [])
+    create_memo('./file_tag1.md', title: 'file_tag1_title', tags: ['tag1'])
+    create_memo('./file_tag1_tag2.md', title: 'file_tag1_tag2_title', tags: ['tag1', 'tag2'])
+    create_memo('./file_tag2.md', title: 'file_tag2_title', tags: ['tag2'])
   end
 
   test "ls any" do
@@ -43,6 +43,17 @@ class DigYamlFrontMatterTest < Test::Unit::TestCase
 
     out = capture_output { Command.start(%w{ls -I tags tag1 -E tags tag2}) }[0]
     assert_equal out.split("\n"), %w{/file_tag1.md}
+  end
+
+  test "ls property" do
+    create_files
+    create_memo('./file_tag3.md',  title: 'file_tag3_title', tags: ['tag3'])
+    out = capture_output { Command.start(%w{ls -e tags tag3 -p tags}) }[0]
+    assert_equal out.split("\n"), ['[]', '["tag1"]', '["tag1", "tag2"]', '["tag2"]']
+
+    out = capture_output { Command.start(%w{ls -e tags tag3 -p title}) }[0]
+    expected = %w{file_title file_tag1_title file_tag1_tag2_title file_tag2_title}
+    assert_equal out.split("\n"), expected
   end
 
   def create_memos_with_date_title
