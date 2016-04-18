@@ -81,4 +81,28 @@ class DigYamlFrontMatterTest < Test::Unit::TestCase
     out = capture_output { Command.start(%w{count -e wday}) }[0]
     assert_equal out.split("\n"), expected
   end
+
+  test "count day average" do
+    memo_num = create_memos_with_date_title
+    out = capture_output { Command.start(%w{count -e day -a}) }[0]
+    assert_equal out.to_f, memo_num / 3.0
+  end
+
+  test "count month average" do
+    memo_num = create_memos_with_date_title
+    out = capture_output { Command.start(%w{count -e month -a}) }[0]
+    assert_equal out.to_f, memo_num / 2.0
+  end
+
+  test "count year average" do
+    memo_num = create_memos_with_date_title
+    out = capture_output { Command.start(%w{count -e year -a}) }[0]
+    assert_equal out.to_f, memo_num / 2.0
+  end
+
+  test "count wday average" do
+    memo_num = create_memos_with_date_title
+    out = capture_output { Command.start(%w{count -e wday -a}) }[0]
+    assert_equal out.to_f, memo_num / 7.0
+  end
 end

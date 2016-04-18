@@ -45,6 +45,7 @@ class Command < Thor
   desc 'count', 'display number of the files each date'
   option :path, :default => './*.md'
   option :each, :aliases => '-e', :type => :string
+  option :average, :aliases => '-a', :type => :boolean
   def count
     digger = DigYamlFrontMatter::Digger.new
     counts = []
@@ -62,33 +63,57 @@ class Command < Thor
 
     case options['each']
     when 'day'
+      day_sum = 0 if options['average']
       days = counts.map {|c| c[:date].match(/\d{4}-\d{2}-\d{2}/)[0]}.uniq
       days.each do |day|
         day_count = counts.select {|c| c[:date].match(day)}.length
-        printf("%s %s [%d]", day, wday_str_from_date_str(day), day_count)
-        puts
+        if options['average']
+          day_sum += day_count
+        else
+          printf("%s %s [%d]", day, wday_str_from_date_str(day), day_count)
+          puts
+        end
       end
+      puts day_sum * 1.0 / days.length if options['average']
     when 'month'
+      month_sum = 0 if options['average']
       months = counts.map {|c| c[:date].match(/\d{4}-\d{2}/)[0]}.uniq
       months.each do |month|
         month_count = counts.select {|c| c[:date].match(month)}.length
-        printf("%s [%d]", month, month_count)
-        puts
+        if options['average']
+          month_sum += month_count
+        else
+          printf("%s [%d]", month, month_count)
+          puts
+        end
       end
+      puts month_sum * 1.0 / months.length if options['average']
     when 'year'
+      year_sum = 0 if options['average']
       years = counts.map {|c| c[:date].match(/\d{4}/)[0]}.uniq
       years.each do |year|
         year_count = counts.select {|c| c[:date].match(year)}.length
-        printf("%s [%d]", year, year_count)
-        puts
+        if options['average']
+          year_sum += year_count
+        else
+          printf("%s [%d]", year, year_count)
+          puts
+        end
       end
+      puts year_sum * 1.0 / years.length if options['average']
     when 'wday'
+      wday_sum = 0 if options['average']
       [*0..6].each do |wday|
         wday_count = counts.select {|c| c[:wday] == wday}.length
-        next if wday_count < 1
-        printf("%s [%d]", wday_to_s(wday), wday_count)
-        puts
+        if options['average']
+          wday_sum += wday_count
+        else
+          next if wday_count < 1
+          printf("%s [%d]", wday_to_s(wday), wday_count)
+          puts
+        end
       end
+      puts wday_sum / 7.0 if options['average']
     end
   end
 
