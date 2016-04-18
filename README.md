@@ -54,6 +54,18 @@ dig_yaml_front_matter ls --path='./blog/**.md'
 今日やること
 ```
 
+#### 表示内容をユニークにする
+`property`オプションと一緒に`unique`を使うことが出来ます。`title`や`tags`を列挙する際に、重複しているものを1つにまとめて辞書順にソートします。そのため、表示数とファイル数は一致しない可能性があります。
+
+```
+❯ dig_yaml_front_matter ls -p tags -u
+business
+category
+clash_royale
+comment
+company
+```
+
 ### count
 
 日・月・年・曜日別でファイルを集計できます。`each`オプションで集計単位を指定します。`average`オプションを一緒に使うと平均が取れます。

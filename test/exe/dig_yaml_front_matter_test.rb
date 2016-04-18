@@ -56,6 +56,17 @@ class DigYamlFrontMatterTest < Test::Unit::TestCase
     assert_equal out.split("\n"), expected
   end
 
+  test "ls unique perperty" do
+    create_files
+    create_memo('./file_tag3.md',  title: 'file_tag3_title', tags: ['tag3'])
+    out = capture_output { Command.start(%w{ls -e tags tag3 -p tags -u}) }[0]
+    assert_equal out.split("\n"), %w{tag1 tag2}
+
+    out = capture_output { Command.start(%w{ls -e tags tag3 -p title -u}) }[0]
+    expected = %w{file_tag1_tag2_title file_tag1_title file_tag2_title file_title}
+    assert_equal out.split("\n"), expected
+  end
+
   def create_memos_with_date_title
     FileUtils.rm(Dir.glob('*'))
     dates = %w{1992-03-27 1992-03-27 1992-03-28 2016-04-22}

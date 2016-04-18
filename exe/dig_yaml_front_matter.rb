@@ -13,7 +13,9 @@ class Command < Thor
   option :include_all, :aliases => '-I', :type => :array
   option :exclude_all, :aliases => '-E', :type => :array
   option :property,    :aliases => '-p', :type => :string
+  option :unique,      :aliases => '-u', :type => :boolean
   def ls
+    front_matter_values = []
     digger = DigYamlFrontMatter::Digger.new
     digger.dig(options['path']) do |path, parsed|
       is_pass = false
@@ -42,6 +44,8 @@ class Command < Thor
       next unless is_pass
       if options['property']
         value = parsed.front_matter.fetch(options['property'], '')
+        front_matter_values << value
+        next if options['unique']
         if value.is_a?(Array)
           printf("%s", value)
           puts
@@ -50,6 +54,11 @@ class Command < Thor
         end
       else
         puts path
+      end
+    end
+    if options['property'] and options['unique']
+      front_matter_values.flatten.uniq.sort.each do |value|
+        puts value
       end
     end
   end
