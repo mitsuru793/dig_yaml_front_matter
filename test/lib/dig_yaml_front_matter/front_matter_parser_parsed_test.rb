@@ -27,8 +27,8 @@ class FrontMatterParserParsedTest < Test::Unit::TestCase
       assert_false parsed.include_all?(title: ['Hi, everyone!', 'hello world'])
     end
 
-    test "returns false when nil" do
-      create_memo('/tmp/tag123.md', tags: nil)
+    test "returns false when empty" do
+      create_memo('/tmp/tag123.md', tags: [])
       parsed = @digger.parse('/tmp/tag123.md')
       assert_false parsed.include_all?(tags: ['tag1'])
     end
@@ -51,8 +51,8 @@ class FrontMatterParserParsedTest < Test::Unit::TestCase
       assert_false parsed.include_any?(title: ['word', 'HELO'])
     end
 
-    test "returns false when nil" do
-      create_memo('/tmp/tag123.md', tags: nil)
+    test "returns false when empty" do
+      create_memo('/tmp/tag123.md', tags: [])
       parsed = @digger.parse('/tmp/tag123.md')
       assert_false parsed.include_any?(tags: ['tag1'])
     end
