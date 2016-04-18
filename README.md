@@ -2,15 +2,41 @@
 
 YAML Front Matterをフィルターにして、ファイル検索が行えます。
 
+## Usage
+### ls
+
+フィルターに引っかかったファイルの相対パスを列挙します。第1引数に指定したYaml Front Matterのプロパティ名が検索対象になります。
+
+検索場所のパスはglobで指定可能です。デフォルトの検索場所は、カレントディレクトリです。
+
+#### OR検索
 ```
-# tagsにgame, dragonが含まれているファイルを検索
+# tagsにgame, dragonのどちらかが含まれているファイルを検索
 dig_yaml_front_matter ls -i tags game dragon
 
-# ./blog/にあるmdファイルから、titleに「について」が含まれているファイルを検索
-dig_yaml_front_matter ls --path='./blog/**.md' -i title について
+# titleに「について」と「何」のどちらかが含まれているファイルを検索
+dig_yaml_front_matter ls -i title について 何
 
-# tagsにgameが含まれていファイルを検索
-dig_yaml_front_matter ls -e tags game
+# tagsにgame, dragonのどちらかが含まれているファイルを検索
+dig_yaml_front_matter ls -E tags game dragon
+```
+
+#### AND検索
+```
+# tagsにgame, dragonの両方が含まれているファイルを検索
+dig_yaml_front_matter ls -I tags game dragon
+
+# titleに「について」と「何」の両方が含まれているファイルを検索
+dig_yaml_front_matter ls -I title について 何
+
+# tagsにgameの両方が含まれていファイルを検索
+dig_yaml_front_matter ls -E tags game
+```
+
+#### 検索場所の変更
+```
+# ./blog/にあるmdファイルからファイルを検索
+dig_yaml_front_matter ls --path='./blog/**.md'
 ```
 
 ## Install
