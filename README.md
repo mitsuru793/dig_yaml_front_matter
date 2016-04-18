@@ -39,6 +39,40 @@ dig_yaml_front_matter ls -E tags game
 dig_yaml_front_matter ls --path='./blog/**.md'
 ```
 
+### count
+
+日・月・年・曜日別でファイルを集計できます。`each`オプションで集計単位を指定します。
+
+| 単位 | オプション値 |
+|:-----|:-------------|
+| 日   | day          |
+| 月   | month        |
+| 年   | year         |
+| 曜日 | wday         |
+
+検索場所のパスはglobで指定可能です。デフォルトの検索場所は、カレントディレクトリです。オプション値は`ls`と同じ`--path`です。
+
+```
+❯ dig_yaml_front_matter count -e date
+2016-03-22 Tue [16]
+2016-03-23 Wed [11]
+2016-03-24 Thu [2]
+
+> dig_yaml_front_matter count -e wday
+Sun [11]
+Mon [3]
+Tue [22]
+```
+
+作成日の判定はファイル名です。接頭辞が`%y-%m-%d`になっている必要があります。
+
+| ファイル名           | 可否             |
+|:---------------------|:-----------------|
+| 2016-03-21-file.md   | ○                |
+| 2016-03-21_file.md   | ○                |
+| 16-03-21_file.md     | ☓                |
+| 16-3-21_file.md      | ☓                |
+
 ## Install
 
 ```

@@ -41,6 +41,68 @@ class Command < Thor
       puts path if is_pass
     end
   end
+
+  desc 'count', 'display number of the files each date'
+  option :path, :default => './*.md'
+  option :each, :aliases => '-e', :type => :string
+  def count
+    digger = DigYamlFrontMatter::Digger.new
+    counts = []
+    digger.dig(options['path']) do |path, parsed|
+      date_re = /^\d{4}-\d{2}-\d{2}/
+      date_format = '%Y-%m-%d'
+
+      file_name = File.basename(path, '.*')
+      date_str = file_name.match(date_re)[0]
+      date = DateTime.strptime(date_str, date_format)
+      wday = date.wday
+
+     counts << {date: date_str, wday: wday}
+    end
+
+    case options['each']
+    when 'day'
+      days = counts.map {|c| c[:date].match(/\d{4}-\d{2}-\d{2}/)[0]}.uniq
+      days.each do |day|
+        day_count = counts.select {|c| c[:date].match(day)}.length
+        printf("%s %s [%d]", day, wday_str_from_date_str(day), day_count)
+        puts
+      end
+    when 'month'
+      months = counts.map {|c| c[:date].match(/\d{4}-\d{2}/)[0]}.uniq
+      months.each do |month|
+        month_count = counts.select {|c| c[:date].match(month)}.length
+        printf("%s [%d]", month, month_count)
+        puts
+      end
+    when 'year'
+      years = counts.map {|c| c[:date].match(/\d{4}/)[0]}.uniq
+      years.each do |year|
+        year_count = counts.select {|c| c[:date].match(year)}.length
+        printf("%s [%d]", year, year_count)
+        puts
+      end
+    when 'wday'
+      [*0..6].each do |wday|
+        wday_count = counts.select {|c| c[:wday] == wday}.length
+        next if wday_count < 1
+        printf("%s [%d]", wday_to_s(wday), wday_count)
+        puts
+      end
+    end
+  end
+
+  private
+  def wday_str_from_date_str(date_str)
+    date_format = '%Y-%m-%d'
+    date = DateTime.strptime(date_str, date_format)
+    wday_to_s(date.wday)
+  end
+
+  def wday_to_s(wday)
+    ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][wday]
+  end
 end
+
 
 Command.start(ARGV)

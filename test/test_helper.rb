@@ -10,7 +10,7 @@ def fixture_path(path)
   File.expand_path(File.join(DIR_NAME, '/fixtures/', path))
 end
 
-def create_memo(path, parse)
+def create_memo(path, parse={})
   str_keys =  parse.keys.map {|v| v.to_s}
   str_keys.each do |str_key|
     sym_key = str_key.to_sym
