@@ -18,30 +18,7 @@ class Command < Thor
     front_matter_values = []
     digger = DigYamlFrontMatter::Digger.new
     digger.dig(options['path']) do |path, parsed|
-      is_pass = false
-      filter_modes = ['include_any', 'exclude_any', 'include_all', 'exclude_all']
-      filter_modes.each do |mode|
-        if options[mode] and options[mode].size < 2
-          puts "#{mode} option requires arguments more than 2."
-          exit
-        elsif options[mode] and options[mode].size > 1
-          item_name = options[mode][0]
-          next unless parsed.front_matter.has_key?(item_name)
-          case mode
-          when 'include_any'
-            is_pass = parsed.include_any?(item_name => options[mode][1..-1])
-          when 'exclude_any'
-            is_pass = !parsed.include_any?(item_name => options[mode][1..-1])
-          when 'include_all'
-            is_pass = parsed.include_all?(item_name => options[mode][1..-1])
-          when 'exclude_all'
-            is_pass = !parsed.include_all?(item_name => options[mode][1..-1])
-          end
-          break unless is_pass
-        end
-      end
-      is_pass = true if filter_modes.all? { |m| options[m].nil? }
-      next unless is_pass
+      next unless filter_pass?(parsed, options)
       if options['property']
         value = parsed.front_matter.fetch(options['property'], '')
         front_matter_values << value
@@ -147,6 +124,33 @@ class Command < Thor
 
   def wday_to_s(wday)
     ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][wday]
+  end
+
+  def filter_pass?(parsed, options)
+    is_pass = false
+    filter_modes = ['include_any', 'exclude_any', 'include_all', 'exclude_all']
+    filter_modes.each do |mode|
+      if options[mode] and options[mode].size < 2
+        puts "#{mode} option requires arguments more than 2."
+        exit
+      elsif options[mode] and options[mode].size > 1
+        item_name = options[mode][0]
+        next unless parsed.front_matter.has_key?(item_name)
+        case mode
+        when 'include_any'
+          is_pass = parsed.include_any?(item_name => options[mode][1..-1])
+        when 'exclude_any'
+          is_pass = !parsed.include_any?(item_name => options[mode][1..-1])
+        when 'include_all'
+          is_pass = parsed.include_all?(item_name => options[mode][1..-1])
+        when 'exclude_all'
+          is_pass = !parsed.include_all?(item_name => options[mode][1..-1])
+        end
+        break unless is_pass
+      end
+    end
+    is_pass = true if filter_modes.all? { |m| options[m].nil? }
+    is_pass
   end
 end
 
