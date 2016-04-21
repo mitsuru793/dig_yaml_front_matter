@@ -22,18 +22,11 @@ class Command < Thor
       if options['property']
         value = parsed.front_matter.fetch(options['property'], '')
         front_matter_values << value
-        next if options['unique']
-        if value.is_a?(Array)
-          printf("%s", value)
-          puts
-        else
-          puts value
-        end
       else
         puts path
       end
     end
-    puts_property(front_matter_values, options['unique'])
+    puts_property(front_matter_values, options['unique']) if options['property']
   end
 
   desc 'count', 'display number of the files each date'
@@ -150,9 +143,17 @@ class Command < Thor
   end
 
   def puts_property(values, is_unique=false)
-    if is_unique
-      values.flatten.uniq.sort.each do |value|
+    values = values.flatten.uniq.sort if is_unique
+    values.each do |value|
+      if is_unique
         puts value
+      else
+        if value.is_a?(Array)
+          printf("%s", value)
+          puts
+        else
+          puts value
+        end
       end
     end
   end
