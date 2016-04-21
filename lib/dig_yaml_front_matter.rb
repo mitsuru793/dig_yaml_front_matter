@@ -15,7 +15,8 @@ module DigYamlFrontMatter
       parseds = []
       Dir.glob(glob).each do |path|
         parsed = parse(path)
-        parseds << (block_given? ? yield(path, parsed) : parsed)
+        parsed = yield(path, parsed) if block_given?
+        parseds << parsed if parsed
       end
       parseds
     end

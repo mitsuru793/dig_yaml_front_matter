@@ -68,5 +68,14 @@ class DigYamlFrontMatterTest < Test::Unit::TestCase
       assert_equal parseds[0], "hello"
       assert_equal parseds[1], "hello"
     end
+
+    test "not to add parsed when block returns false" do
+      create_memos('/tmp/hello.md', 2)
+      parseds = @digger.dig("/tmp/*.md") do |path, parsed|
+        path == '/tmp/hello0.md' ? false : parsed
+      end
+      assert_equal parseds.length, 1
+      assert_equal parseds[0]['title'], "hello1"
+    end
   end
 end
