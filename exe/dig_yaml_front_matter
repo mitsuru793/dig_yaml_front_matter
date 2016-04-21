@@ -33,11 +33,7 @@ class Command < Thor
         puts path
       end
     end
-    if options['property'] and options['unique']
-      front_matter_values.flatten.uniq.sort.each do |value|
-        puts value
-      end
-    end
+    puts_property(front_matter_values, options['unique'])
   end
 
   desc 'count', 'display number of the files each date'
@@ -151,6 +147,14 @@ class Command < Thor
     end
     is_pass = true if filter_modes.all? { |m| options[m].nil? }
     is_pass
+  end
+
+  def puts_property(values, is_unique=false)
+    if is_unique
+      values.flatten.uniq.sort.each do |value|
+        puts value
+      end
+    end
   end
 end
 
