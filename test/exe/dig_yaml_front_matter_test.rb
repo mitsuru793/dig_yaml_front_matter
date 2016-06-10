@@ -1,6 +1,10 @@
 require_relative '../test_helper'
 
 class DigYamlFrontMatterTest < Test::Unit::TestCase
+  def setup
+    $stdin = STDIN
+  end
+
   def create_files
     FileUtils.rm(Dir.glob('*'))
     create_memo('./file.md', title: 'file_title', tags: [])
@@ -65,6 +69,24 @@ class DigYamlFrontMatterTest < Test::Unit::TestCase
     out = capture_output { Command.start(%w{ls -e tags tag3 -p title -u}) }[0]
     expected = %w{file_tag1_tag2_title file_tag1_title file_tag2_title file_title}
     assert_equal out.split("\n"), expected
+  end
+
+  test "ls read array of paths" do
+    create_files
+    out = capture_output { Command.start(%w{ls --path /file_tag1.md /file_tag2*}) }[0]
+    assert_equal     out.split("\n"), %w{/file_tag1.md /file_tag2.md}
+  end
+
+  test "ls read paths from standard input" do
+    create_files
+    io = StringIO.new'./file.md'
+    io.puts './file_tag1.md'
+    io.puts './file.md'
+    io.rewind
+    $stdin = io
+    out = capture_output { Command.start(%w{ls -I tags tag1}) }[0]
+    assert_equal     out.split("\n"), %w{/file_tag1.md}
+    assert_not_equal out.split("\n"), %w{/file_tag1.md /file_tag1_tag2.md}
   end
 
   def create_memos_with_date_title

@@ -7,7 +7,7 @@ require 'dig_yaml_front_matter'
 class Command < Thor
   using DigYamlFrontMatter
   desc 'ls', 'list file path filtering with item of yaml front matter'
-  option :path, :default => './*.md'
+  option :path, :type => :array
   option :include_any, :aliases => '-i', :type => :array
   option :exclude_any, :aliases => '-e', :type => :array
   option :include_all, :aliases => '-I', :type => :array
@@ -17,7 +17,16 @@ class Command < Thor
   def ls
     front_matter_values = []
     digger = DigYamlFrontMatter::Digger.new
-    digger.dig(options['path']) do |path, parsed|
+    if options['path'].nil?
+      #paths = File.pipe?($stdin) ? $stdin.read.split("\n") : './*.md'
+      #paths = $stdin.eof? ? './*.md' : $stdin.read.split("\n")
+      #paths = $stdin.eof? ? './*.md' : 'true'
+      #$stdin.eof?
+      paths = './*.md'
+    else
+      paths = options['path']
+    end
+    digger.dig(paths) do |path, parsed|
       next unless filter_pass?(parsed, options)
       if options['property']
         value = parsed.front_matter.fetch(options['property'], '')
